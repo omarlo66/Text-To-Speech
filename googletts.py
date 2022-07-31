@@ -17,20 +17,12 @@ class Functions:
 
     def DeleteLastFiles():
         try:
-            os.chdir(SayDir)
-            for file in open('DeleteList.txt','r').readlines():
-                F = file.replace('\n','')
-                try:
-                    os.remove(F)
-                except:
-                    if os.path.exists(F):
-                        os.remove(F)
-                    else:
-                        pass
-                open('DeleteList.txt','w').truncate()
+            for file in os.listdir(SayDir):
+                os.remove(SayDir + file)
         except Exception as e:
             print(e)
             pass
+
 class TTS:
     def Say(Text,Language):
         try:
@@ -49,8 +41,8 @@ class TTS:
         print("Played") 
         while mixer.music.get_busy():
             continue
-        open('DeleteList.txt','a').write(File + '\n')
-        open('DeleteList.txt','w').truncate()
+        print("Stopped")
+        Functions.DeleteLastFiles()
 
     def LangList():
         F = gtts.tts.tts_langs()
@@ -66,8 +58,14 @@ class TTS:
     def Save(Text,language,filename):
         Lang = Convert.Language(language)
         tts = gtts.gTTS(lang=Lang, text=Text)
-        tts.save(str(filename).join('.mp3'))
-        print("Saved")
+        try:
+            if '.mp3' in filename:
+                tts.save(filename)
+            else:
+                tts.save(f'{filename}.mp3')
+        except Exception as e:
+            print(f'There is error: {e}')
+            pass
 
 class Convert:
     def Language(lang):
@@ -83,4 +81,3 @@ class Convert:
         for i in range(len(Values)):
             if Values[i] == lang:
                 return Keys[i]
-            
